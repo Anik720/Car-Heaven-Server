@@ -143,7 +143,6 @@ async function run() {
       res.send(inventories);
     });
   } finally {
-    // Ensures that the client will close when you finish/error
   }
 }
 run().catch(console.dir);
