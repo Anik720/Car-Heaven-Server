@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const { MongoClient, ObjectId } = require('mongodb');
-const jwt =require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const app = express();
 
@@ -9,25 +9,22 @@ app.use(cors());
 app.use(express.json());
 const PORT = process.env.PORT || 5000;
 
-
 function verifyJWT(req, res, next) {
   const authHeader = req.headers.authorization;
-  console.log(authHeader)
+  console.log(authHeader);
   if (!authHeader) {
-      return res.status(401).send({ message: 'unauthorized access' });
+    return res.status(401).send({ message: 'unauthorized access' });
   }
   const token = authHeader.split(' ')[1];
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
-      if (err) {
-          return res.status(403).send({ message: 'Forbidden access' });
-      }
-      console.log('decoded', decoded);
-      req.decoded = decoded;
-      next();
-  })
+    if (err) {
+      return res.status(403).send({ message: 'Forbidden access' });
+    }
+    console.log('decoded', decoded);
+    req.decoded = decoded;
+    next();
+  });
 }
-
-
 
 // Connection URI
 const uri = process.env.DB;
@@ -42,20 +39,15 @@ async function run() {
     console.log('Connected successfully to server');
 
     const inventoryCollection = client.db('geniusCar').collection('service');
-   
+
     app.post('/login', async (req, res) => {
       const user = req.body;
       const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
-          expiresIn: '1d'
+        expiresIn: '1d',
       });
       res.send({ accessToken });
-  })
-   
-   
-   
-   
-   
-   
+    });
+
     app.get('/inventory', async (req, res) => {
       const query = {};
       const cursor = inventoryCollection.find(query);
@@ -106,11 +98,11 @@ async function run() {
 
       const inventory = await inventoryCollection.findOne(query);
       const newQuantity = inventory.quantity;
-     
+
       const options = { upsert: true };
       const updateDoc = {
         $set: {
-          quantity: parseInt(newQuantity)  +parseInt(restock) ,
+          quantity: parseInt(newQuantity) + parseInt(restock),
         },
       };
 
@@ -140,10 +132,10 @@ async function run() {
       res.send(result);
     });
 
-    app.get('/myItem',verifyJWT, async (req, res) => {
+    app.get('/myItem', verifyJWT, async (req, res) => {
       const uid = req.query.uid;
       const email = req.query.email;
-     
+
       const query = { email };
       const cursor = inventoryCollection.find(query);
       const inventories = await cursor.toArray();
