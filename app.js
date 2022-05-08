@@ -30,8 +30,8 @@ function verifyJWT(req, res, next) {
 
 
 // Connection URI
-const uri = `mongodb+srv://anik:${process.env.DB_Password}@cluster0.fiyfw.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
-// Create a new MongoClient
+const uri = process.env.DB;
+
 const client = new MongoClient(uri);
 async function run() {
   try {
