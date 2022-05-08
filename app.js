@@ -32,7 +32,6 @@ const uri = process.env.DB;
 const client = new MongoClient(uri);
 async function run() {
   try {
-    // Connect the client to the server
     await client.connect();
     // Establish and verify connection
 
